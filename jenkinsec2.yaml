@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CFN template to create EC2 to launch template resources
+
+Resources:
+  JenkinsLaunchTemplate1:
+    Type: "AWS::EC2::LaunchTemplate"
+    Properties:
+      LaunchTemplateName: JenkinsLaunchTemplate1
+      LaunchTemplateData:
+        InstanceType: t2.micro
+        SecurityGroupIds:
+          - !GetAtt SecurityGroupJenkins.GroupId
+
+  ElasticIpforJenkinsServer:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref JenkinsInstance1
+
+  JenkinsInstance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: fouronekey2
+      ImageId: ami-0729e439b6769d6ab
+      LaunchTemplate:
+        LaunchTemplateId: !Ref JenkinsLaunchTemplate1
+        Version: !GetAtt JenkinsLaunchTemplate1.LatestVersionNumber
+      Tags:
+        - Key: Name
+          Value: UbuntuInstance
+
+  SecurityGroupJenkins:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SG to enable SSH and ICMP For Ubuntu
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 142.188.2.24/32
+        - IpProtocol: icmp
+          FromPort: 8
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  EIPIPV4:
+    Description: Reference for the elastic ip address
+    Value: !Ref ElasticIpforJenkinsServer
+    Export:
+      Name: EIP-Output
+
+
+
+
+
