@@ -20,23 +20,27 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       KeyName: fouronekey2
-      ImageId: ami-0729e439b6769d6ab
+      ImageId: ami-05912b6333beaa478
       LaunchTemplate:
         LaunchTemplateId: !Ref JenkinsLaunchTemplate1
         Version: !GetAtt JenkinsLaunchTemplate1.LatestVersionNumber
       Tags:
         - Key: Name
-          Value: UbuntuInstance
+          Value: JenkinsInstance
 
   SecurityGroupJenkins:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: SG to enable SSH and ICMP For Ubuntu
+      GroupDescription: SG to enable SSH and ICMP For JenkinsInstance
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 142.188.2.24/32
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
         - IpProtocol: icmp
           FromPort: 8
           ToPort: -1
