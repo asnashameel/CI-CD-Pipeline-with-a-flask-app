@@ -42,6 +42,20 @@ Choosing a managed ubuntu image from aws, to handle the build process and EC2 co
 - Set up the artifacts configuration to generate the build output required for deployment.
 - Review the build project settings and click on the "Create build project" button to create your AWS CodeBuild project.
 
+### Ensure Docker Daemon can be run 
+
+To ensure your build instance you are using have the ability to run docker daemon. Do the following : 
+
+*** Know that by default AWS does not install you the docker daemon, you need to enable this setting ***
+
+a) Go to the project, click on Edit on the right hand side of the project. 
+b) Scroll down to Environment settings 
+c) Choose On demand option for provisioning model
+d) Choose Managed Image
+e) Compute should be EC2 
+f) Operating system should be Ubuntu for this project, standard runtime and standard 7.0 latest image
+g) Click on additional setting and scroll down to "Priveleged" setting 
+h) Enable this "Priveleged" flag if you want to build Docker images or want your builds to get elevated privileges.
 
 
 ## Create an AWS CodePipeline
