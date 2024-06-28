@@ -1,0 +1,23 @@
+version: 0.2
+
+run-as: Linux-user-name
+
+env:
+  parameter-store:
+    DOCKER_USERNAME: /docker-credentials/username
+    DOCKER_PASSWORD: /docker-credentials/password
+    DOCKER_URL: /docker-credentials/url
+      
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  pre_build:
+    commands:
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - echo "Building docker image"
+      - docker build --tag "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest" .
+      - docker push "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest"
+
