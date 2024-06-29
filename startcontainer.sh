@@ -1,4 +1,7 @@
 set -e
+##### Install docker in the ec2 instance ###
+
+sudo apt install docker.io -y
 
 ### pulling the docker image
 docker pull mr2chowdh/flaskapp
