@@ -19,3 +19,7 @@ phases:
       - docker build --tag "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest" .
       - docker push "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest"
 
+artifacts:
+  files:
+    - '**/*'
+  base-directory: ../simple-python-app
