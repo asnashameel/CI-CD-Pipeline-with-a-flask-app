@@ -161,8 +161,11 @@ systemctl start codedeploy-agent
 ### Create deployments where you would use the appspec.yml 
 
 - Setup with git hub and provide your repo details and commit details 
-## Trigger the CI Process
+## Trigger the CI by adding the Deploy stage Process
 
+- Go to the code pipeline, edit the stages and add code deloy as action provider
+- Choose buildartifact
+- Choose your application  and deployment group
 In this final step, we'll trigger the CI process by making a change to our GitHub repository. Let's see how it works:
 
 - Go to your GitHub repository and make a change to your Python application's source code. It could be a bug fix, a new feature, or any other change you want to introduce.
