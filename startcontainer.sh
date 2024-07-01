@@ -7,4 +7,4 @@ sudo apt install docker.io -y
 docker pull mr2chowd/flaskapp:latest
 
 ## running the docker application at port 5000
-docker run -d -p 5000:5000
+docker run -d -p 5000:5000 mr2chowd/flaskapp:latest
