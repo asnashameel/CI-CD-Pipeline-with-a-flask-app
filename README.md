@@ -74,14 +74,14 @@ To ensure your build instance you are using have the ability to run docker daemo
 
 *** Know that by default AWS does not install you the docker daemon, you need to enable this setting ***
 
-a) Go to the project, click on Edit on the right hand side of the project. 
-b) Scroll down to Environment settings 
-c) Choose On demand option for provisioning model
-d) Choose Managed Image
-e) Compute should be EC2 
-f) Operating system should be Ubuntu for this project, standard runtime and standard 7.0 latest image
-g) Click on additional setting and scroll down to "Priveleged" setting 
-h) Enable this "Priveleged" flag if you want to build Docker images or want your builds to get elevated privileges.
+- Go to the project, click on Edit on the right hand side of the project. 
+- Scroll down to Environment settings 
+- Choose On demand option for provisioning model
+- Choose Managed Image
+- Compute should be EC2 
+- Operating system should be Ubuntu for this project, standard runtime and standard 7.0 latest image
+- Click on additional setting and scroll down to "Priveleged" setting 
+- Enable this "Priveleged" flag if you want to build Docker images or want your builds to get elevated privileges.
 
 Test your build pipeline first to ensure, everything is working then move on to setting up codepipeline.
 
@@ -166,10 +166,10 @@ systemctl start codedeploy-agent
 - Go to the code pipeline, edit the stages and add code deloy as action provider
 - Choose buildartifact
 - Choose your application  and deployment group
+
 In this final step, we'll trigger the CI process by making a change to our GitHub repository. Let's see how it works:
 
 - Go to your GitHub repository and make a change to your Python application's source code. It could be a bug fix, a new feature, or any other change you want to introduce.
 - Commit and push your changes to the branch configured in your AWS CodePipeline.
 - Head over to the AWS CodePipeline console and navigate to your pipeline.
 - You should see the pipeline automatically kick off as soon as it detects the changes in your repository.
-- Sit back and relax while AWS CodePipeline takes care of the rest. It will fetch the latest code, trigger the build process with AWS CodeBuild, and deploy the application if you configured the deployment stage.
