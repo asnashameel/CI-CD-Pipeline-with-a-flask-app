@@ -38,7 +38,9 @@ phases:
       - echo $DOCKER_PASSWORD |  docker login --username "$DOCKER_USERNAME" --password-stdin
       - docker build --tag "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest" .
       - docker push "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest"
-
+  artifacts:
+    files:
+      - '**/*'
 ```
 
 ### Second step of creation of Service Role for Code Build
