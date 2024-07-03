@@ -120,40 +120,18 @@ We need to install an agent or runner on the EC2 instance so that CodeDeploy can
 
 Sign in to the instance and enter the following commands, one after the other:
 
-```sh
+```
+
 sudo apt-get update
 sudo apt-get install -y ruby
 cd /home/ubuntu
+##/home/ubuntu represents the default user name for an Ubuntu Server instance. If your instance was created using a custom AMI, the AMI owner might have specified a different default user name.
 wget https://aws-codedeploy-us-west-2.s3.amazonaws.com/latest/install
 chmod +x ./install
 sudo ./install auto
-
-
-
-```
-sudo apt update
-
-sudo apt install ruby-full
-
-sudo apt install wget
-
-cd /home/ubuntu
-
-## /home/ubuntu represents the default user name for an Ubuntu Server instance. If your instance was created using a custom AMI, the AMI owner might have specified a different default user name.
-
-wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
-
-
-chmod +x ./install
-
-sudo ./install auto
-
 systemctl status codedeploy-agent
-
-## if system ctl is not running, use the following code ####
-
+##If system ctl is not running, use the following code####
 systemctl start codedeploy-agent
-
 ```
 ## AWS CodeDeploy
 
@@ -161,20 +139,14 @@ systemctl start codedeploy-agent
    - Navigate to CodeDeploy and create a new application.
    - Choose a suitable name for your application and select the compute platform.
 
-### Create a Deployment Group
-
 2. **Set Up the Deployment Group**
    - Select "webapp" as the deployment group.
    - Choose a service role that grants CodeDeploy access to necessary AWS services for deployment.
    - For the deployment type, select "in-place" for now.
    - Select the web server EC2 instances and finalize the application configuration based on your load balancing and auto-scaling requirements.
 
-### Create Deployments Using the appspec.yml
-
 3. **Set Up GitHub Integration**
    - Configure the deployment with your GitHub repository, providing the necessary repo and commit details.
-
-## Trigger the CI Process by Adding the Deploy Stage
 
 4. **Add Deploy Stage to CodePipeline**
    - Go to CodePipeline, edit the stages, and add CodeDeploy as an action provider.
