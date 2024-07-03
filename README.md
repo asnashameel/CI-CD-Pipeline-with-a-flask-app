@@ -44,83 +44,91 @@ artifacts:
   files:
     - '**/*'
 ```
+## Step 2: Creating a Service Role for CodeBuild
 
-### Second step of creation of Service Role for Code Build
+- Go to IAM and select the "Role" option from the left sidebar. Click the "Create role" button.
+- In the service or use case section, choose "CodeBuild" to allow CodeBuild to call AWS services on your behalf.
+- Additionally, add the AWS SSM ACCESS parameter store to the attached role policy.
 
-- Go to IAM and choose the "role" option from left side bart and hit "create role" button.
-- In the servie or use case , choose "CodeBuild" which allows codebuild to call AWS services on your behalf.
-- Also add, parameter store AWS SSM ACCESS to the attached role policy
+After creating the service role for the build service, follow these steps:
 
-After the creation of the service role for build service, do the following steps:
+## Steps for CodeBuild
 
-### Steps of Code Build
+1. In the AWS Management Console, navigate to the AWS CodeBuild service.
+2. Click on the "Create build project" button and provide a name for your build project (e.g., "dolcehar_web_app").
+3. Optionally, provide a description of the build project.
+4. Restrict the number of concurrent builds based on your budget. For example, limit CodeBuild usage to two developers at a time.
+5. Configure the build environment, such as the operating system, runtime, and compute resources required for your Python application.
 
-- In the AWS Management Console, navigate to the AWS CodeBuild service.
-- Click on the "Create build project" button and provide a name for your build project. In my case, "dolcehar_web_app"
-- You can choose to provide a good description of the build project. 
-- You can restrict the number of concurrent builds based on the amount of money you have allocated for the project. I will want to restrict to two developers being able to use codebuild to update their codes in the pipeline at once. 
+    ```
+    In this example, I chose on-demand infrastructure to optimize cost rather than reserved capacity.
 
-- Configure the build environment, such as the operating system, runtime, and compute resources required for your Python application.
+    I selected a managed Ubuntu image from AWS to handle the build process and EC2 compute resources.
+    ```
 
-```
-In this example, i have chosen on demand infrastructure to optimize cost and not go for reserved capacity. 
+6. Specify the build commands, such as installing dependencies and running tests. Customize this based on your application's requirements.
+7. Set up the artifacts configuration to generate the build output required for deployment.
+8. Review the build project settings and click on the "Create build project" button to create your AWS CodeBuild project.
 
-Choosing a managed ubuntu image from aws, to handle the build process and EC2 compute process. 
+## Ensure Docker Daemon Can Run
 
-```
-- Specify the build commands, such as installing dependencies and running tests. Customize this based on your application's requirements.
-- Set up the artifacts configuration to generate the build output required for deployment.
-- Review the build project settings and click on the "Create build project" button to create your AWS CodeBuild project.
+To ensure your build instance can run the Docker daemon, follow these steps:
 
-### Ensure Docker Daemon can be run 
+***Note: By default, AWS does not install the Docker daemon. You need to enable this setting.***
 
-To ensure your build instance you are using have the ability to run docker daemon. Do the following : 
+1. Go to the project, click on "Edit" on the right-hand side of the project.
+2. Scroll down to Environment settings.
+3. Choose the On-demand option for the provisioning model.
+4. Choose Managed Image.
+5. Compute should be EC2.
+6. The operating system should be Ubuntu, with the standard runtime and the latest standard 7.0 image.
+7. Click on Additional settings and scroll down to the "Privileged" setting.
+8. Enable the "Privileged" flag if you want to build Docker images or want your builds to get elevated privileges.
 
-*** Know that by default AWS does not install you the docker daemon, you need to enable this setting ***
-
-- Go to the project, click on Edit on the right hand side of the project. 
-- Scroll down to Environment settings 
-- Choose On demand option for provisioning model
-- Choose Managed Image
-- Compute should be EC2 
-- Operating system should be Ubuntu for this project, standard runtime and standard 7.0 latest image
-- Click on additional setting and scroll down to "Priveleged" setting 
-- Enable this "Priveleged" flag if you want to build Docker images or want your builds to get elevated privileges.
-
-Test your build pipeline first to ensure, everything is working then move on to setting up codepipeline.
+Test your build pipeline first to ensure everything is working, then move on to setting up CodePipeline.
 
 ## Create an AWS CodePipeline
-We are moving forward to Codepipeline setup for Continous deployments. AWS CodePipeline will orchestrate the flow of changes from our GitHub repository to the deployment of our application. Let's set it up:
 
-- Navigate to the AWS CodePipeline service and Click on the "Create pipeline" button.
-- Provide a name for your pipeline.
-- Choose an execution method you would like.I selected "superseeded" and click next.
-- For the source stage, select "GitHub" as the source provider.
-- Connect your GitHub account to AWS CodePipeline and select your repository. Choose version 2 and choose your app. 
-- Choose the branch you want to use for your pipeline.
-- In the build stage, select "AWS CodeBuild" as the build provider.
-- Choose the build project we created earlier 
-- You can choose to create the deploy stage later.
+We are moving forward to CodePipeline setup for Continuous Deployments. AWS CodePipeline will orchestrate the flow of changes from our GitHub repository to the deployment of our application. Let's set it up:
 
-### Create or use the server where you want to deploy your app on
+1. Navigate to the AWS CodePipeline service and click on the "Create pipeline" button.
+2. Provide a name for your pipeline.
+3. Choose an execution method you would like. I selected "superseeded" and click next.
+4. For the source stage, select "GitHub" as the source provider.
+5. Connect your GitHub account to AWS CodePipeline and select your repository. Choose version 2 and choose your app.
+6. Choose the branch you want to use for your pipeline.
+7. In the build stage, select "AWS CodeBuild" as the build provider.
+8. Choose the build project we created earlier.
+9. You can choose to create the deploy stage later.
 
-- Navigate to EC2 service on AWS 
-- Click on launch a instance 
-- Use an ubuntu image and choose a suitable instance type 
-- Choose a keypair for logins
-- Allow SSH traffic from your selected IP address or group of whitelisted Ip addresses
-- Make sure to keep the same tags in resources for operation and other team members can easily sort out the services under same app. Also mention the evironments. 
+## Create or Use the Server for Deployment
 
-### EC2 INSTANCE CODE DEPLOY AGENT 
+1. Navigate to the EC2 service on AWS.
+2. Click on "Launch instance."
+3. Use an Ubuntu image and choose a suitable instance type.
+4. Choose a key pair for logins.
+5. Allow SSH traffic from your selected IP address or group of whitelisted IP addresses.
+6. Make sure to keep the same tags in resources for operation so other team members can easily sort out the services under the same app. Also, mention the environments.
 
-- We need to install an agent or runner in ec2 instance so that code deploy can deploy the apps inside it.
+## EC2 Instance CodeDeploy Agent
 
-- Make sure you give this Code deploy the right permissions to talk to ec2.
+We need to install an agent or runner on the EC2 instance so that CodeDeploy can deploy the apps inside it.
 
-To install the CodeDeploy agent on Ubuntu Server
-- Sign in to the instance.
+- Make sure you give this CodeDeploy the right permissions to talk to EC2.
 
-Enter the following commands, one after the other:
+### To install the CodeDeploy agent on Ubuntu Server
+
+Sign in to the instance and enter the following commands, one after the other:
+
+```sh
+sudo apt-get update
+sudo apt-get install -y ruby
+cd /home/ubuntu
+wget https://aws-codedeploy-us-west-2.s3.amazonaws.com/latest/install
+chmod +x ./install
+sudo ./install auto
+
+
 
 ```
 sudo apt update
@@ -147,33 +155,41 @@ systemctl status codedeploy-agent
 systemctl start codedeploy-agent
 
 ```
+## AWS CodeDeploy
 
+1. **Create an Application**
+   - Navigate to CodeDeploy and create a new application.
+   - Choose a suitable name for your application and select the compute platform.
 
+### Create a Deployment Group
 
-## AWS CODE DEPLOY
+2. **Set Up the Deployment Group**
+   - Select "webapp" as the deployment group.
+   - Choose a service role that grants CodeDeploy access to necessary AWS services for deployment.
+   - For the deployment type, select "in-place" for now.
+   - Select the web server EC2 instances and finalize the application configuration based on your load balancing and auto-scaling requirements.
 
-- Click on Code Deploy and create an application. 
-- Choose a suitable name for your application and compute platform
+### Create Deployments Using the appspec.yml
 
-### Create a deployment group 
+3. **Set Up GitHub Integration**
+   - Configure the deployment with your GitHub repository, providing the necessary repo and commit details.
 
-- Choose a webapp deployment group
-- Choose a service role that has access for Code deploy to access any AWS service for deployment
-- Choose in place for now for deploytment type. 
-- Click on the webserver ec2 instances and finalize the application based on load balancing and autoscaling stuff you need. 
+## Trigger the CI Process by Adding the Deploy Stage
 
-### Create deployments where you would use the appspec.yml 
+4. **Add Deploy Stage to CodePipeline**
+   - Go to CodePipeline, edit the stages, and add CodeDeploy as an action provider.
+   - Select the build artifact.
+   - Choose your application and deployment group.
 
-- Setup with git hub and provide your repo details and commit details 
-## Trigger the CI by adding the Deploy stage Process
+### Triggering the CI Process
 
-- Go to the code pipeline, edit the stages and add code deloy as action provider
-- Choose buildartifact
-- Choose your application  and deployment group
+In this final step, we'll trigger the CI process by making a change to our GitHub repository. Here's how it works:
 
-In this final step, we'll trigger the CI process by making a change to our GitHub repository. Let's see how it works:
+1. **Make a Change in GitHub**
+   - Go to your GitHub repository and make a change to your Python application's source code. This could be a bug fix, a new feature, or any other modification.
+   - Commit and push your changes to the branch configured in your AWS CodePipeline.
 
-- Go to your GitHub repository and make a change to your Python application's source code. It could be a bug fix, a new feature, or any other change you want to introduce.
-- Commit and push your changes to the branch configured in your AWS CodePipeline.
-- Head over to the AWS CodePipeline console and navigate to your pipeline.
-- You should see the pipeline automatically kick off as soon as it detects the changes in your repository.
+2. **Monitor the Pipeline**
+   - Head over to the AWS CodePipeline console and navigate to your pipeline.
+   - The pipeline should automatically start as soon as it detects changes in your repository.
+
