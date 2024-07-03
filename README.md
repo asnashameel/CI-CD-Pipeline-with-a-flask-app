@@ -1,10 +1,10 @@
-# AWS Continuous Integration and Deployment with a flask app 
+# AWS Continuous Integration and Deployment with a Flask App 
 
 ## Set Up GitHub Repository
 
 The first step in our CI journey is to set up a GitHub repository to store our Python application's source code. If you already have a repository, feel free to skip this step. Otherwise, let's create a new repository on GitHub by following these steps:
 
-- Go to github.com and sign in to your account.
+- Go to [github.com](https://github.com) and sign in to your account.
 - Create a new repository.
 - Give your repository a name and an optional description.
 - Choose the appropriate visibility option based on your needs.
@@ -13,11 +13,13 @@ The first step in our CI journey is to set up a GitHub repository to store our P
 
 ## Configure AWS CodeBuild
 
-In this step, we'll configure AWS CodeBuild to build our flask application based on the specifications we define. CodeBuild will take care of building and packaging our application for deployment. Make sure yoy have saved the parameters needed to login into docker hub are saved in parameter store in Systems Manager with encrypted passwords with KMS.
+In this step, we'll configure AWS CodeBuild to build our Flask application based on the specifications we define. CodeBuild will take care of building and packaging our application for deployment. Make sure you have saved the parameters needed to log in to Docker Hub in the Systems Manager Parameter Store, with encrypted passwords using KMS.
 
-First step would be create a buildspec.yml file and save it in your repository. 
+### Create a buildspec.yml File
 
-```
+Create a `buildspec.yml` file and save it in your repository. 
+
+```yaml
 version: 0.2
 env:
   parameter-store:
@@ -35,12 +37,12 @@ phases:
   build:
     commands:
       - echo "Building docker image"
-      - echo $DOCKER_PASSWORD |  docker login --username "$DOCKER_USERNAME" --password-stdin
+      - echo $DOCKER_PASSWORD | docker login --username "$DOCKER_USERNAME" --password-stdin
       - docker build --tag "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest" .
       - docker push "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest"
-  artifacts:
-    files:
-      - '**/*'
+artifacts:
+  files:
+    - '**/*'
 ```
 
 ### Second step of creation of Service Role for Code Build
