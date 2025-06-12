@@ -1,12 +1,10 @@
-version: 0.0
-os: linux
-
-hooks:
-  ApplicationStop:
-    - location: stopcontainer.sh
-      timeout: 300
-      runas: root
-  AfterInstall:
-    - location: startcontainer.sh
-      timeout: 300
-      runas: root
+---
+version: 1
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "arn:aws:ecs:us-east-1:207567798584:task-definition/python-definition:1"
+        LoadBalancerInfo:
+          ContainerName: "python-asna"
+          ContainerPort: 5000
