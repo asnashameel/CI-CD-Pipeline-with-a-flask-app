@@ -1,0 +1,23 @@
+version: 0.2
+      
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  pre_build:
+    commands:
+      - pip install -r requirements.txt
+      - REPO_NAME: python-app
+      - REGION: us-east-1
+      - IMAGE_TAG: us-east-1
+      
+  build:
+    commands:
+      - echo "Building docker image"
+      - echo $DOCKER_PASSWORD |  docker login --username "$DOCKER_USERNAME" --password-stdin
+      - docker build --tag "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest" .
+      - docker push "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest"
+
+artifacts:
+  files:
+    - '**/*'

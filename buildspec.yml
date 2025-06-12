@@ -1,10 +1,4 @@
-version: 0.2
-env:
-  parameter-store:
-    DOCKER_USERNAME: /docker-credentials/username
-    DOCKER_PASSWORD: /docker-credentials/password
-    DOCKER_URL: /docker-credentials/url
-      
+version: 0.2      
 phases:
   install:
     runtime-versions:
@@ -12,13 +6,26 @@ phases:
   pre_build:
     commands:
       - pip install -r requirements.txt
+      - REPO_NAME=python-app
+      - ACCOUNT_ID=207567798584
+      - aws --version
+      - REGION=us-east-1
+      - IMAGE_TAG=latest
+      - - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 207567798584.dkr.ecr.us-east-1.amazonaws.com
   build:
     commands:
       - echo "Building docker image"
-      - echo $DOCKER_PASSWORD |  docker login --username "$DOCKER_USERNAME" --password-stdin
-      - docker build --tag "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest" .
-      - docker push "$DOCKER_URL/$DOCKER_USERNAME/flaskapp:latest"
+      - docker build -t $REPO_NAME .
+      - docker tag $REPO_NAME:$IMAGE_TAG $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Pushing Docker image to Amazon ECR...
+      - docker push 207567798584.dkr.ecr.us-east-1.amazonaws.com/python-app:$IMAGE_TAG
+      - echo Writing imagedefinitions.json...
+      - printf '[{"name":"python-asna","imageUri":"%s.dkr.ecr.%s.amazonaws.com/%s:%s"}]' $ACCOUNT_ID $REGION $REPO_NAME $IMAGE_TAG > im>
+      - echo Writing appspec.yml...
 
 artifacts:
   files:
-    - '**/*'
+    - imagedefinitions.json
+    - appspec.yml
